@@ -112,6 +112,10 @@ app.use("/performancec", performancecRoutes);
 
 // MONGOOSE SETUP
 const PORT = process.env.PORT || 6001;
+
+// Log the MONGO_URL to ensure it is correctly loaded
+console.log('MONGO_URL:', process.env.MONGO_URL);
+
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
