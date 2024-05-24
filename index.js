@@ -1,4 +1,3 @@
-
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
@@ -32,16 +31,17 @@ import { editTeacher } from "./controllers/teachers.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config();
-const app = express();
+
+const app = express();  // Declaración de `app` corregida
+
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-const cors = require('cors');
 app.use(cors({
-  origin: 'https://schoolinfo.com'
+  origin: 'https://schoolinfo.com' // Cambia esto a la URL de tu frontend desplegado
 }));
 
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
