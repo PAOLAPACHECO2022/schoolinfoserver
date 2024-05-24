@@ -27,27 +27,22 @@ import { verifyToken } from "./middleware/auth.js";
 import { editStudent } from "./controllers/students.js";
 import { editTeacher } from "./controllers/teachers.js";
 
-// CONFIGURATIONS
+//CONFIGURATIONS
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config();
-
 const app = express();
-
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors({
-  origin: 'https://schoolinfocliente.onrender.com' // Cambia esto a la URL de tu frontend desplegado
-}));
-
+app.use(cors());
 app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 mongoose.set("strictQuery", true);
 
-// FILE STORAGE
+//FILE STORAGE
 const adminStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "public/assets/admins");
@@ -82,7 +77,7 @@ const adminUpload = multer({ storage: adminStorage });
 const teacherUpload = multer({ storage: teacherStorage });
 const studentUpload = multer({ storage: studentStorage });
 
-// ROUTES WITH FILES
+//ROUTES WITH FILES
 app.post(
   "/auth/registerStudent",
   verifyToken,
@@ -99,7 +94,7 @@ app.post("/auth/registerAdmin", adminUpload.single("picture"), registerAdmin);
 app.patch("/students/:studentId/editStudent", verifyToken, studentUpload.single("picture"), editStudent);
 app.patch("/teachers/:teacherId/editTeacher", verifyToken, teacherUpload.single("picture"), editTeacher);
 
-// ROUTES
+//ROUTES
 app.use("/auth", authRoutes);
 app.use("/teachers", teacherRoutes);
 app.use("/grades", gradeRoutes);
@@ -110,21 +105,15 @@ app.use("/activities", activityRoutes);
 app.use("/attendance", attendanceRoutes);
 app.use("/performancec", performancecRoutes);
 
-// MONGOOSE SETUP
-const MONGO_URL = process.env.MONGO_URL;
-if (!MONGO_URL) {
-  console.error('Error: MONGO_URL is not defined in environment variables.');
-  process.exit(1);
-}
-
+//MONGOOSE SETUP
 const PORT = process.env.PORT || 6001;
 mongoose
-  .connect(MONGO_URL, {
+  .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => {
     app.listen(PORT, () => console.log(`Server port: ${PORT}`));
   })
-  .catch((error) => console.log(`${error} did not connect`));
+  .catch((error) => console.log(error));
 
