@@ -32,7 +32,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config();
 
-const app = express();  // Declaración de `app` corregida
+const app = express();
 
 app.use(express.json());
 app.use(helmet());
@@ -111,14 +111,20 @@ app.use("/attendance", attendanceRoutes);
 app.use("/performancec", performancecRoutes);
 
 // MONGOOSE SETUP
+const MONGO_URL = process.env.MONGO_URL;
+if (!MONGO_URL) {
+  console.error('Error: MONGO_URL is not defined in environment variables.');
+  process.exit(1);
+}
+
 const PORT = process.env.PORT || 6001;
 mongoose
-  .connect(process.env.MONGO_URL, {
+  .connect(MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => {
     app.listen(PORT, () => console.log(`Server port: ${PORT}`));
   })
-  .catch((error) => console.log(error));
+  .catch((error) => console.log(`${error} did not connect`));
 
